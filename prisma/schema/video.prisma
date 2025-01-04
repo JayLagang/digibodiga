@@ -1,0 +1,10 @@
+model Video {
+    id           Int      @id @default(autoincrement())
+    title        String
+    description  String?
+    originalName String
+    s3Key        String
+    s3Url        String
+    creationDate DateTime
+    uploadedAt   DateTime @default(now())
+}
