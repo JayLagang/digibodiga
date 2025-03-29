@@ -1,0 +1,22 @@
+services:
+
+    postgres:
+        container_name: digibodiga_postgres
+        image: postgres
+        ports:
+            - 5432:5432
+        volumes:
+            - ./data/postgres:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
+    # ngrok:
+    #     image: ngrok/ngrok
+    #     environment:
+    #         - NGROK_AUTHTOKEN=2oSsVBHZCz0WbKRDaF0ApJt0gax_3FDDetZx9fwLJnizPMmTd
+    #     command: http host.docker.internal:8000  # Forward traffic to your local Node.js server
+    #     ports:
+    #         - "4040:4040"  # Keep port 4040 for the web interface
+    #     stdin_open: true
+    #     tty: true

@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "driverAdapters", "prismaSchemaFolder", "relationJoins", "multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["user", "file"]
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  firstName  String?
+  lastName   String?
+  userName   String?
+  rootFolder RootFolder?
+  folders    Folder[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@schema("user")
+}
+
+model RootFolder {
+  id      String   @id @default(cuid())
+  name    String?
+  userId  String   @unique
+  user    User     @relation(fields: [userId], references: [id])
+  folders Folder[]
+
+  @@schema("file")
+}
+
+model Folder {
+  id           String      @id @default(cuid())
+  name         String?
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
+  parent       Folder?     @relation("FolderToFolder", fields: [parentId], references: [id])
+  parentId     String?
+  children     Folder[]    @relation("FolderToFolder")
+  files        File[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  RootFolder   RootFolder? @relation(fields: [rootFolderId], references: [id])
+  rootFolderId String?
+
+  @@schema("file")
+}
+
+model File {
+  id        String   @id @default(cuid())
+  name      String?
+  folder    Folder   @relation(fields: [folderId], references: [id])
+  type      FileType
+  folderId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@schema("file")
+}
+
+enum FileType {
+  PICTURE
+  VIDEO
+  AUDIO
+  DOCUMENT
+
+  @@schema("file")
+}
